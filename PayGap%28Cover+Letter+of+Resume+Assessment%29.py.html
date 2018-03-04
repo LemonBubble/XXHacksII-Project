@@ -1,0 +1,148 @@
+
+# coding: utf-8
+
+# In[22]:
+
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import nltk
+from nltk.corpus import stopwords
+
+
+# In[23]:
+
+
+#reads the csv file
+get_ipython().system('head -500 /Applications/resumeGrading.csv')
+
+
+# In[24]:
+
+
+df = pd.read_csv("/Applications/resumeGrading.csv")
+
+
+# In[25]:
+
+
+df.head()
+
+
+# In[29]:
+
+
+lc = lambda x: x.lower()
+
+
+# In[30]:
+
+
+dfpass = df[(df['domain1_score'] == 0) | (df['domain1_score'] == 1) ]
+
+
+# In[31]:
+
+
+# X is feature , y is target
+X = df["essay"]
+y = df["domain1_score"]
+
+
+# In[32]:
+
+
+import string
+
+
+# In[33]:
+
+
+def text_process(inputtext):
+
+    cleanit = [char for char in inputtext     if char not in string.punctuation]
+
+    cleanit = ''.join(cleanit)
+    return [word for word in cleanit.split() if word.lower() not in stopwords.words('english')]
+
+
+# In[34]:
+
+
+testSentence = "I think California really has some fantastic Thai food options, and Thai is on top of my list.."
+
+
+# In[35]:
+
+
+print (text_process(testSentence))
+
+
+# In[36]:
+
+
+# convert each review into a vector
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+pgTransform = CountVectorizer(analyzer=text_process).fit(X)
+
+
+# In[37]:
+
+
+# To illustrate how the vectoriser works,
+# lets try a random review and get its bag-of-word
+# counts as a vector.
+firstResume = X[0]
+firstResume
+
+
+# In[38]:
+
+
+transformfirstResume = pgTransform.transform([firstReview])
+
+
+# In[ ]:
+
+
+print(transformfirstResume)
+
+
+# In[ ]:
+
+
+X = pgTransform.transform(X)
+
+
+# In[ ]:
+
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=101)
+
+
+# In[ ]:
+
+
+from sklearn.naive_bayes import MultinomialNB
+nb = MultinomialNB()
+nb.fit(X_train, y_train)
+
+
+# In[ ]:
+
+
+# predict
+preds = nb.predict(X_test)
+
+
+# In[ ]:
+
+
+from sklearn.metrics import confusion_matrix, classification_report
+print(confusion_matrix(y_test, preds))
+print('\n')
+print(classification_report(y_test, preds)
+
