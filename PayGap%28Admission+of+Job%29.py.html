@@ -1,0 +1,82 @@
+
+# coding: utf-8
+
+# In[82]:
+
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import nltk
+from nltk.corpus import stopwords
+
+
+# In[83]:
+
+
+get_ipython().system('head -500 /Applications/admissions.csv')
+
+
+# In[84]:
+
+
+df = pd.read_csv("/Applications/admissions.csv")
+
+
+# In[85]:
+
+
+df.head()
+
+
+# In[86]:
+
+
+df['years'] = np.ceil(df['years']/100)
+
+
+# In[87]:
+
+
+df.head()
+
+
+# In[88]:
+
+
+#we will create which admissions are admitted and which aren't
+dfadmit = df[(df['admit'] == 0) | (df['admit'] == 1)]
+
+
+# In[89]:
+
+
+feature_set=['gpa', 'years', 'prestige']
+
+
+# In[95]:
+
+
+X=df[feature_set]
+Y=df['admit']
+
+
+# In[91]:
+
+
+from sklearn import svm
+
+
+# In[92]:
+
+
+model = svm.SVC()
+
+
+# In[93]:
+
+
+model.fit(X, Y)
+model.score(X, Y)
+
